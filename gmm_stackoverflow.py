@@ -9,7 +9,20 @@ from torch import nn
 from torch import optim
 import torch.distributions as D
 
-from example import plot_gmm
+from example import make_ellipse
+
+
+def plot_gmm(data, mu, sigma, filename):
+    ax1 = plt.subplot(111, aspect='auto')
+    xy_lim = 10
+    mu = np.squeeze(mu.data.cpu().numpy())
+    sigma = np.squeeze(sigma.data.cpu().numpy())
+    ax1.scatter(data[:, 0], data[:, 1])
+
+    make_ellipse(mu, sigma, ax1, xy_lim)
+
+    plt.tight_layout()
+    plt.savefig(filename)
 
 
 def main():
