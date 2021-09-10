@@ -41,7 +41,7 @@ def main():
 
     # parameters = [weights, means, stddevs]
     parameters = [mu, sigma]
-    optimizer1 = optim.SGD(parameters, lr=5e-2, momentum=0.9)
+    optimizer1 = optim.Adam(parameters, lr=1e-1)
     # m_list = []
     # for i in range(k):
     #     m_list.append(D.MultivariateNormal(torch.zeros(dim), torch.eye(dim)))
