@@ -26,31 +26,6 @@ from pykeops.torch import Vi, Vj, LazyTensor
 
 
 ####################################################################
-# Define our dataset: a collection of points :math:`(x_i)_{i\in[1,N]}` which describe a
-# spiral in the unit square.
-
-# Choose the storage place for our data : CPU (host) or GPU (device) memory.
-dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
-torch.manual_seed(0)
-N = 10000  # Number of samples
-t = torch.linspace(0, 2 * np.pi, N + 1)[:-1]
-x = torch.stack((0.5 + 0.4 * (t / 7) * t.cos(), 0.5 + 0.3 * t.sin()), 1)
-x = x + 0.02 * torch.randn(x.shape)
-x = x.type(dtype)
-x.requires_grad = True
-
-####################################################################
-# Display:
-
-# Create a uniform grid on the unit square:
-res = 200
-ticks = np.linspace(0, 1, res + 1)[:-1] + 0.5 / res
-X, Y = np.meshgrid(ticks, ticks)
-
-grid = torch.from_numpy(np.vstack((X.ravel(), Y.ravel())).T).contiguous().type(dtype)
-
-
-####################################################################
 # Gaussian Mixture Model
 # ----------------------
 #
@@ -96,7 +71,7 @@ grid = torch.from_numpy(np.vstack((X.ravel(), Y.ravel())).T).contiguous().type(d
 
 
 class GaussianMixture(Module):
-    def __init__(self, M, sparsity=0, D=2):
+    def __init__(self, M, dtype, grid, res, sparsity=0, D=2):
         super(GaussianMixture, self).__init__()
 
         self.params = {}
@@ -104,7 +79,7 @@ class GaussianMixture(Module):
         # the unit square, with a small-ish radius:
         self.mu = torch.rand(M, D).type(dtype)
         self.A = 15 * torch.ones(M, 1, 1) * torch.eye(D, D).view(1, D, D)
-        self.A = (self.A).type(dtype).contiguous()
+        self.A = self.A.type(dtype).contiguous()
         self.w = torch.ones(M, 1).type(dtype)
         self.sparsity = sparsity
         self.mu.requires_grad, self.A.requires_grad, self.w.requires_grad = (
@@ -112,6 +87,9 @@ class GaussianMixture(Module):
             True,
             True,
         )
+        self.dtype = dtype
+        self.grid = grid
+        self.res = res
 
     def update_covariances(self):
         """Computes the full covariance matrices from the model's parameters."""
@@ -170,9 +148,9 @@ class GaussianMixture(Module):
         """Displays the model."""
         plt.clf()
         # Heatmap:
-        heatmap = self.likelihoods(grid)
+        heatmap = self.likelihoods(self.grid)
         heatmap = (
-            heatmap.view(res, res).data.cpu().numpy()
+            heatmap.view(self.res, self.res).data.cpu().numpy()
         )  # reshape as a "background" image
 
         scale = np.amax(np.abs(heatmap[:]))
@@ -187,8 +165,8 @@ class GaussianMixture(Module):
         )
 
         # Log-contours:
-        log_heatmap = self.log_likelihoods(grid)
-        log_heatmap = log_heatmap.view(res, res).data.cpu().numpy()
+        log_heatmap = self.log_likelihoods(self.grid)
+        log_heatmap = log_heatmap.view(self.res, self.res).data.cpu().numpy()
 
         scale = np.amax(np.abs(log_heatmap[:]))
         levels = np.linspace(-scale, scale, 41)
@@ -209,6 +187,31 @@ class GaussianMixture(Module):
 
 def main():
     ####################################################################
+    # Define our dataset: a collection of points :math:`(x_i)_{i\in[1,N]}` which describe a
+    # spiral in the unit square.
+
+    # Choose the storage place for our data : CPU (host) or GPU (device) memory.
+    dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
+    torch.manual_seed(0)
+    N = 10000  # Number of samples
+    t = torch.linspace(0, 2 * np.pi, N + 1)[:-1]
+    x = torch.stack((0.5 + 0.4 * (t / 7) * t.cos(), 0.5 + 0.3 * t.sin()), 1)
+    x = x + 0.02 * torch.randn(x.shape)
+    x = x.type(dtype)
+    x.requires_grad = True
+
+    ####################################################################
+    # Display:
+
+    # Create a uniform grid on the unit square:
+    res = 200
+    ticks = np.linspace(0, 1, res + 1)[:-1] + 0.5 / res
+    X, Y = np.meshgrid(ticks, ticks)
+
+    grid = torch.from_numpy(
+        np.vstack((X.ravel(), Y.ravel())).T).contiguous().type(dtype)
+
+    ####################################################################
     # Optimization
     # ------------
     #
@@ -216,7 +219,7 @@ def main():
     # to the data through a stochastic gradient descent on our empiric log-likelihood,
     # with a sparsity-inducing penalty:
 
-    model = GaussianMixture(30, sparsity=20)
+    model = GaussianMixture(30, dtype, grid, res, sparsity=20)
     optimizer = torch.optim.Adam([model.A, model.w, model.mu], lr=0.1)
     loss = np.zeros(501)
 
