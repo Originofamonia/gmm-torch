@@ -21,8 +21,8 @@ def main():
     # weights = torch.ones(k, requires_grad=True)
     # means = torch.tensor(np.random.randn(k, dim), requires_grad=True)
     # stddevs = torch.tensor(np.abs(np.random.randn(k, dim)), requires_grad=True)
-    mu = torch.zeros(dim)
-    sigma = torch.eye(dim)
+    mu = torch.zeros(dim, requires_grad=True)
+    sigma = torch.eye(dim, requires_grad=True)
 
     # parameters = [weights, means, stddevs]
     parameters = [mu, sigma]
