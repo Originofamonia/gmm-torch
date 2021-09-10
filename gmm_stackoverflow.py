@@ -9,6 +9,8 @@ from torch import nn
 from torch import optim
 import torch.distributions as D
 
+from example import plot_gmm
+
 
 def main():
     k = 4
@@ -45,7 +47,7 @@ def main():
         optimizer1.step()
 
         print(i, loss2.item())
-    print(mu, sigma)
+    plot_gmm(points, mu, sigma, 'gmm_stackoverflow.pdf')
 
 
 if __name__ == '__main__':
