@@ -14,7 +14,7 @@ from example import make_ellipse
 
 def plot_gmm(data, mu, sigma, filename):
     ax1 = plt.subplot(111, aspect='auto')
-    xy_lim = 10
+    xy_lim = 19
     mu = np.squeeze(mu.data.cpu().numpy())
     sigma = np.squeeze(sigma.data.cpu().numpy())
     ax1.scatter(data[:, 0], data[:, 1])
