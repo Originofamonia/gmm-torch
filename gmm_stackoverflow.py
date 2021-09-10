@@ -31,7 +31,7 @@ def main():
     filename = 'points.npz'
     points = np.load(filename, allow_pickle=True)['arr_0']
     # points = np.concatenate(points, axis=0)
-    points = points[2].astype('float32')
+    points = points[3].astype('float32')
     print(np.mean(points, axis=0))
     # weights = torch.ones(k, requires_grad=True)
     # means = torch.tensor(np.random.randn(k, dim), requires_grad=True)
