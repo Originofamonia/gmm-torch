@@ -36,7 +36,7 @@ def main():
 
 def plot_gmm(data, model):
     ax1 = plt.subplot(111, aspect='auto')
-    xy_lim = 75
+    xy_lim = 10
     mu = np.squeeze(model.mu.data.cpu().numpy())
     sigma = np.squeeze(model.var.data.cpu().numpy())
     ax1.scatter(data[:, 0], data[:, 1])
