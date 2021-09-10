@@ -25,6 +25,7 @@ def main():
 
     num_iter = 1001
     for i in range(num_iter):
+        print(weights)
         mix = D.Categorical(weights)
         comp = D.Independent(D.Normal(means, stddevs), 1)
         gmm = D.MixtureSameFamily(mix, comp)
