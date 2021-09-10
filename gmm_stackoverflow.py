@@ -41,12 +41,12 @@ def main():
 
     # parameters = [weights, means, stddevs]
     parameters = [mu, sigma]
-    optimizer1 = optim.SGD(parameters, lr=1e-2, momentum=0.9)
+    optimizer1 = optim.SGD(parameters, lr=5e-2, momentum=0.9)
     # m_list = []
     # for i in range(k):
     #     m_list.append(D.MultivariateNormal(torch.zeros(dim), torch.eye(dim)))
 
-    num_iter = 1000
+    num_iter = 3000
     for i in range(num_iter):
         # mix = D.Categorical(weights)
         # comp = D.Independent(D.Normal(means, stddevs), 1)
