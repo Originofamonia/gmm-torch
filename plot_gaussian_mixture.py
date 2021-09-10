@@ -130,7 +130,7 @@ class GaussianMixture(Module):
         """Log-density, sampled on a given point cloud."""
         self.update_covariances()
         K_ij = -Vi(sample).weightedsqdist(Vj(self.mu), Vj(self.params["gamma"]))
-        return K_ij.logsumexp(dim=1, weight=Vj(self.weights()))
+        return K_ij.logsumexp(dim=1, weight=Vj(self.weights()))  # logsumexp has error
 
     def neglog_likelihood(self, sample):
         """Returns -log(likelihood(sample)) up to an additive factor."""
@@ -211,12 +211,11 @@ def main():
     grid = torch.from_numpy(
         np.vstack((X.ravel(), Y.ravel())).T).contiguous().type(dtype)
 
-    ####################################################################
     # Optimization
     # ------------
     #
-    # In typical PyTorch fashion, we fit our Mixture Model
-    # to the data through a stochastic gradient descent on our empiric log-likelihood,
+    # In typical PyTorch fashion, we fit our Mixture Model to the data through
+    # a stochastic gradient descent on our empiric log-likelihood,
     # with a sparsity-inducing penalty:
 
     model = GaussianMixture(30, dtype, grid, res, sparsity=20)
@@ -241,8 +240,6 @@ def main():
             plt.tight_layout()
             plt.pause(0.01)
 
-
-    ####################################################################
     # Monitor the optimization process:
     #
     plt.figure()
