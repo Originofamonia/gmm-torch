@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import seaborn as sns
 sns.set(style="white", font="Arial")
 colors = sns.color_palette("Paired", n_colors=12).as_hex()
@@ -29,8 +30,42 @@ def main():
     model.fit(data)
     # .. used to predict the data points as they where shifted
     y = model.predict(data)
+    plot_gmm(data, model)
+    # plot(data, y)
 
-    plot(data, y)
+
+def plot_gmm(data, model):
+    ax1 = plt.subplot(111, aspect='auto')
+    xy_lim = 75
+    mu = model.mu
+    sigma = model.var
+    ax1.scatter(data[:, 0], data[:, 1])
+    make_ellipse(mu, sigma, ax1, xy_lim)
+
+
+def make_ellipse(mu, sigma, ax, xy_lim, edgecolor='black'):
+    cov = sigma
+    # pearson = cov[0, 1] / np.sqrt(cov[0, 0] * cov[1, 1])
+    # # Using a special case to obtain the eigenvalues of this
+    # # two-dimensionl dataset.
+    # ell_radius_x = np.sqrt(1 + pearson)
+    # ell_radius_y = np.sqrt(1 - pearson)
+    v, w = np.linalg.eigh(cov)
+    u = w[0] / np.linalg.norm(w[0])
+    angle = np.arctan2(u[1], u[0])
+    angle = 180 * angle / np.pi  # convert to degrees
+    v = 3. * np.sqrt(2.) * np.sqrt(v)
+    mean = mu
+    mean = mean.reshape(2, 1)
+    print(mean)
+    ell = mpl.patches.Ellipse(mean, v[0], v[1],
+                              180 + angle, edgecolor=edgecolor, linestyle=':',
+                              lw=4, facecolor='none')
+    ell.set_clip_box(ax.bbox)
+    ell.set_alpha(0.5)
+    ax.add_artist(ell)
+    ax.set_xlim(-xy_lim, xy_lim)
+    ax.set_ylim(-xy_lim, xy_lim)
 
 
 def plot(data, y):
