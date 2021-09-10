@@ -489,4 +489,4 @@ class GaussianMixture(torch.nn.Module):
 
             delta = torch.norm((center_old - center), dim=1).max()
 
-        return (center.unsqueeze(0) * (x_max - x_min) + x_min)
+        return center.unsqueeze(0) * (x_max - x_min) + x_min
