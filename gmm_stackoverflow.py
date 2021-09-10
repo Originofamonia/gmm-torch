@@ -15,7 +15,7 @@ def main():
     dim = 2  # inputs_dim
     filename = 'points.npz'
     points = np.load(filename, allow_pickle=True)['arr_0']
-
+    points = np.concatenate(points, axis=0)
     weights = torch.ones(k, requires_grad=True)
     means = torch.tensor(np.random.randn(k, dim), requires_grad=True)
     stddevs = torch.tensor(np.abs(np.random.randn(k, dim)), requires_grad=True)
