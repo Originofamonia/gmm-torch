@@ -37,10 +37,13 @@ def main():
 def plot_gmm(data, model):
     ax1 = plt.subplot(111, aspect='auto')
     xy_lim = 75
-    mu = model.mu
-    sigma = model.var
+    mu = np.squeeze(model.mu.data.cpu().numpy())
+    sigma = np.squeeze(model.var.data.cpu().numpy())
     ax1.scatter(data[:, 0], data[:, 1])
-    make_ellipse(mu, sigma, ax1, xy_lim)
+    for mu_i, sigma_i in zip(mu, sigma):
+        make_ellipse(mu_i, sigma_i, ax1, xy_lim)
+    plt.tight_layout()
+    plt.savefig("draw_gmm.pdf")
 
 
 def make_ellipse(mu, sigma, ax, xy_lim, edgecolor='black'):
