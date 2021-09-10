@@ -13,7 +13,7 @@ import torch.distributions as D
 def main():
     k = 4
     dim = 2  # inputs_dim
-    filename = '../points.npz'
+    filename = 'points.npz'
     points = np.load(filename, allow_pickle=True)['arr_0']
 
     weights = torch.ones(k, requires_grad=True)
