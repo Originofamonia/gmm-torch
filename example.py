@@ -30,15 +30,15 @@ def main():
     model.fit(data)
     # .. used to predict the data points as they where shifted
     y = model.predict(data)
-    plot_gmm(data, model)
+    plot_gmm(data, model.mu, model.var)
     # plot(data, y)
 
 
-def plot_gmm(data, model):
+def plot_gmm(data, mu, sigma):
     ax1 = plt.subplot(111, aspect='auto')
     xy_lim = 10
-    mu = np.squeeze(model.mu.data.cpu().numpy())
-    sigma = np.squeeze(model.var.data.cpu().numpy())
+    mu = np.squeeze(mu.data.cpu().numpy())
+    sigma = np.squeeze(sigma.data.cpu().numpy())
     ax1.scatter(data[:, 0], data[:, 1])
     for mu_i, sigma_i in zip(mu, sigma):
         make_ellipse(mu_i, sigma_i, ax1, xy_lim)
