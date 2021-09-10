@@ -23,7 +23,7 @@ def main():
     parameters = [weights, means, stddevs]
     optimizer1 = optim.SGD(parameters, lr=1e-3, momentum=0.9)
 
-    num_iter = 1001
+    num_iter = 351
     for i in range(num_iter):
         # weights = torch.relu(weights)
         mix = D.Categorical(weights)
