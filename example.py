@@ -42,6 +42,7 @@ def plot_gmm(data, model):
     ax1.scatter(data[:, 0], data[:, 1])
     for mu_i, sigma_i in zip(mu, sigma):
         make_ellipse(mu_i, sigma_i, ax1, xy_lim)
+        ax1.scatter(mu_i[0], mu_i[1], c='black')
     plt.tight_layout()
     plt.savefig("draw_gmm.pdf")
 
